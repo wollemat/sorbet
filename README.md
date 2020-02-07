@@ -4,19 +4,34 @@
 
 # Sorbet
 
-Sorbet is an interpreter for a Python-like scripting languages. This language is by no means special, complete or desirable in any way and should not be used in production. The interpreter is written out of curiosity and for practice.
+Sorbet is an interpreter for the esoteric programming language Brainfuck. The interpreter is by no means extremely fast, special or desirable to use, just as the language. The development of this project is purely for academic purposes and practise.
 
 ## Getting Started
 
-TBD;
+To get a build of Sorbet up and running on your local machine the following tools are required:
+
+* A working installment of the GCC compiler
+* A working installment of CMake
+* A working installment of Make
 
 ## Building
 
-TBD;
+Building is as simple as running the following 2 commands in the root of the project:
+
+```
+$ cmake .
+$ make
+```
 
 ## Deployment
 
-TBD;
+To interpret a Brainfuck source file (.bf) only a single command is needed. Run the following command in the root of the project:
+
+```
+$ ./sorbet SOURCE_FILE
+```
+
+Where `SOURCE_FILE` is the file name of the source file to be interpreted.
 
 ## Authors
 
