@@ -1,69 +1,76 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void interpret(char* input) {
-    char tape[30000] = {0};
-    char* ptr = tape;
-    char current_char;
-    size_t i;
-    size_t loop;
+const int NUMBER_OF_CELLS = 30000;
 
-    for (i = 0; input[i] != 0; i++) {
-        current_char = input[i];
-        if (current_char == '>') {
-            ++ptr;
-        } else if (current_char == '<') {
-            --ptr;
-        } else if (current_char == '+') {
-            ++*ptr;
-        } else if (current_char == '-') {
-            --*ptr;
-        } else if (current_char == '.' ) {
-            putchar(*ptr);
-        } else if (current_char == ',') {
-            *ptr = getchar();
-        } else if (current_char == '[') {
-            continue;
-        } else if (current_char == ']' && *ptr) {
-            loop = 1;
-            while (loop > 0) {
-                current_char = input[--i];
-                if (current_char == '[') {
-                    loop--;
-                } else if (current_char == ']') {
-                    loop++;
+void interpret(char* src) {
+    char tape[NUMBER_OF_CELLS] = {0};
+    char* ptr = tape;
+
+    while (1) {
+        int c = *src;
+
+        if (c == '\0') return;
+        else if (c == '>') ++ptr;
+        else if (c == '<') --ptr;
+        else if (c == '+') ++*ptr;
+        else if (c == '-') --*ptr;
+        else if (c == '.') putchar(*ptr);
+        else if (c == ',') *ptr = (char) getchar();
+        else if (c == '[') {
+            if (*ptr == 0) {
+                int brackets = 1;
+                while (brackets != 0) {
+                    ++src;
+                    c = *src;
+                    if (c == '[') ++brackets;
+                    if (c == ']') --brackets;
                 }
             }
         }
+        else if (c == ']') {
+            if (*ptr != 0) {
+                int brackets = 1;
+                while (brackets != 0) {
+                    --src;
+                    c = *src;
+                    if (c == '[') --brackets;
+                    if (c == ']') ++brackets;
+                }
+            }
+        }
+
+        ++src;
     }
 }
 
-char* read_source(char* name) {
-    FILE *file;
-    char *source;
-    file = fopen(name, "r");
-    if (file == NULL) {
-        printf("File %s could not be opened\n", name);
+
+char* read_file(char* name) {
+    FILE *fp = fopen(name, "r");
+    if (fp == NULL) {
+        printf("%s could not be opened or otherwise failed to open.\n", name);
         exit(EXIT_FAILURE);
     }
-    fseek(file, 0L, SEEK_END);
-    long file_size = ftell(file);
-    source = malloc(file_size);
-    rewind(file);
-    fread(source, 1, file_size, file);
-    fclose(file);
-    return source;
+    fseek(fp, 0, SEEK_END);
+    long len = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+    char* src = malloc(len + 1);
+    for (int i = 0; i < len; i++) src[i] = (char) fgetc(fp);
+    src[len] = '\0';
+    fclose(fp);
+    return src;
 }
+
 
 int main(int argc, char **argv) {
     if (argc != 2) {
-        printf("Invalid arguments. Usage: sorbet file\n");
+        printf("Invalid arguments. Usage: sorbet file.\n");
         exit(EXIT_FAILURE);
     }
 
-    char *input = read_source(argv[1]);
-    interpret(input);
+    char* src = read_file(argv[1]);
+    interpret(src);
+    free(src);
 
-    free(input);
     exit(EXIT_SUCCESS);
 }
