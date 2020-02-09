@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 
 const int NUMBER_OF_CELLS = 30000;
 
@@ -83,9 +84,15 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
+    clock_t start = clock();
+
     char* src = read_file(argv[1]);
     interpret(src);
     free(src);
+
+    clock_t end = clock();
+    double cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    printf("Execution time: %f seconds\n", cpu_time_used);
 
     exit(EXIT_SUCCESS);
 }
