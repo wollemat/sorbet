@@ -56,9 +56,23 @@ char* read_file(char* name) {
     long len = ftell(fp);
     fseek(fp, 0, SEEK_SET);
     char* src = malloc(len + 1);
-    for (int i = 0; i < len; i++) src[i] = (char) fgetc(fp);
+    int bracket_counter = 0;
+    for (int i = 0; i < len; i++) {
+        char c = (char) fgetc(fp);
+        if (c == '[') bracket_counter++;
+        if (c == ']') bracket_counter--;
+        src[i] =  c;
+    }
     src[len] = '\0';
     fclose(fp);
+    if (bracket_counter > 0) {
+        printf("Unmatched '[': program is invalid\n");
+        exit(EXIT_FAILURE);
+    }
+    if (bracket_counter < 0) {
+        printf("Unmatched ']': program is invalid\n");
+        exit(EXIT_FAILURE);
+    }
     return src;
 }
 
