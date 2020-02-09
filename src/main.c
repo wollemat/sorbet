@@ -40,6 +40,7 @@ void interpret(char* src) {
             }
         }
 
+        if (ptr < tape || ptr > tape + NUMBER_OF_CELLS - 1) break;
         ++src;
     }
 }
