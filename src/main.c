@@ -2,27 +2,25 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <time.h>
 
 const char* START_FILE =
         "#include <stdlib.h>\n"
         "#include <stdio.h>\n"
+        "#include <time.h>\n"
         "\n"
         "char tape[30000] = {0};\n"
         "char* ptr = tape;\n"
         "\n"
         "int main() {\n"
+        "clock_t start = clock();\n"
         "\n";
 
 const char* END_FILE =
         "\n"
-        "   exit(EXIT_SUCCESS);\n"
+        "printf(\"\\n\\nExecution time: %f seconds\\n\", ((double) (clock() - start)) / CLOCKS_PER_SEC);\n"
+        "exit(EXIT_SUCCESS);\n"
         "}\n";
 
-const char* INC_VAL_OP = "++*ptr;\n";
-const char* DEC_VAL_OP = "--*ptr;\n";
-const char* INC_PTR_OP = "ptr++;\n";
-const char* DEC_PTR_OP = "ptr--;\n";
 const char* OUT_OP = "putchar(*ptr);\n";
 const char* IN_OP = "*ptr = getchar();\n";
 const char* OPEN_OP = "while (*ptr) {\n";
@@ -35,12 +33,50 @@ void transpile(char* src) {
 
     fwrite(START_FILE, 1, strlen(START_FILE), wfp);
 
+    char buffer[1024] = {0};
     char c;
     while ((c = (char) fgetc(rfp)) != EOF) {
-        if (c == '+') fwrite(INC_VAL_OP, 1, strlen(INC_VAL_OP), wfp);
-        else if (c == '-') fwrite(DEC_VAL_OP, 1, strlen(DEC_VAL_OP), wfp);
-        else if (c == '>') fwrite(INC_PTR_OP, 1, strlen(INC_PTR_OP), wfp);
-        else if (c == '<') fwrite(DEC_PTR_OP, 1, strlen(DEC_PTR_OP), wfp);
+        if (c == '[') {
+            char c2 = (char) fgetc(rfp);
+            char c3 = (char) fgetc(rfp);
+            if (c2 == '-' && c3 == ']') {
+                sprintf(buffer, "*ptr = 0;\n");
+                fwrite(buffer, 1, strlen(buffer), wfp);
+                continue;
+            } else {
+                fseek(rfp, -2, SEEK_CUR);
+            }
+        }
+
+        if (c == '+') {
+            int acc = 1;
+            while (fgetc(rfp) == '+') acc++;
+            fseek(rfp, -1, SEEK_CUR);
+            sprintf(buffer, "*ptr += %d;\n", acc);
+            fwrite(buffer, 1, strlen(buffer), wfp);
+        }
+        else if (c == '-') {
+            int acc = 1;
+            while (fgetc(rfp) == '-') acc++;
+            fseek(rfp, -1, SEEK_CUR);
+            sprintf(buffer, "*ptr -= %d;\n", acc);
+            fwrite(buffer, 1, strlen(buffer), wfp);
+        }
+        else if (c == '>') {
+            int acc = 1;
+            while (fgetc(rfp) == '>') acc++;
+            fseek(rfp, -1, SEEK_CUR);
+            sprintf(buffer, "ptr += %d;\n", acc);
+            fwrite(buffer, 1, strlen(buffer), wfp);
+        }
+        else if (c == '<') {
+            int acc = 1;
+            while (fgetc(rfp) == '<') acc++;
+            fseek(rfp, -1, SEEK_CUR);
+            sprintf(buffer, "ptr -= %d;\n", acc);
+            fwrite(buffer, 1, strlen(buffer), wfp);
+        }
+
         else if (c == '.') fwrite(OUT_OP, 1, strlen(OUT_OP), wfp);
         else if (c == ',') fwrite(IN_OP, 1, strlen(IN_OP), wfp);
         else if (c == '[') fwrite(OPEN_OP, 1, strlen(OPEN_OP), wfp);
@@ -64,12 +100,8 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
-    clock_t start = clock();
-
     transpile(argv[1]);
     run();
-
-    printf("\n\nExecution time: %f seconds\n", ((double) (clock() - start)) / CLOCKS_PER_SEC);
 
     exit(EXIT_SUCCESS);
 }
