@@ -1,82 +1,62 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <sys/stat.h>
 #include <time.h>
 
-const int NUMBER_OF_CELLS = 30000;
+const char* START_FILE =
+        "#include <stdlib.h>\n"
+        "#include <stdio.h>\n"
+        "\n"
+        "char tape[30000] = {0};\n"
+        "char* ptr = tape;\n"
+        "\n"
+        "int main() {\n"
+        "\n";
 
-void interpret(char* src) {
-    char tape[NUMBER_OF_CELLS] = {0};
-    char* ptr = tape;
+const char* END_FILE =
+        "\n"
+        "   exit(EXIT_SUCCESS);\n"
+        "}\n";
 
-    while (1) {
-        int c = *src;
+const char* INC_VAL_OP = "++*ptr;\n";
+const char* DEC_VAL_OP = "--*ptr;\n";
+const char* INC_PTR_OP = "ptr++;\n";
+const char* DEC_PTR_OP = "ptr--;\n";
+const char* OUT_OP = "putchar(*ptr);\n";
+const char* IN_OP = "*ptr = getchar();\n";
+const char* OPEN_OP = "while (*ptr) {\n";
+const char* CLOSE_OP = "}\n";
 
-        if (c == '\0') return;
-        else if (c == '>') ++ptr;
-        else if (c == '<') --ptr;
-        else if (c == '+') ++*ptr;
-        else if (c == '-') --*ptr;
-        else if (c == '.') putchar(*ptr);
-        else if (c == ',') *ptr = (char) getchar();
-        else if (c == '[') {
-            if (*ptr == 0) {
-                int brackets = 1;
-                while (brackets != 0) {
-                    ++src;
-                    c = *src;
-                    if (c == '[') ++brackets;
-                    if (c == ']') --brackets;
-                }
-            }
-        }
-        else if (c == ']') {
-            if (*ptr != 0) {
-                int brackets = 1;
-                while (brackets != 0) {
-                    --src;
-                    c = *src;
-                    if (c == '[') --brackets;
-                    if (c == ']') ++brackets;
-                }
-            }
-        }
+void transpile(char* src) {
+    mkdir("./bin", S_IRWXU);
+    FILE *rfp = fopen(src, "r");
+    FILE *wfp = fopen("./bin/generated.c", "w");
 
-        if (ptr < tape || ptr > tape + NUMBER_OF_CELLS - 1) break;
-        ++src;
+    fwrite(START_FILE, 1, strlen(START_FILE), wfp);
+
+    char c;
+    while ((c = (char) fgetc(rfp)) != EOF) {
+        if (c == '+') fwrite(INC_VAL_OP, 1, strlen(INC_VAL_OP), wfp);
+        else if (c == '-') fwrite(DEC_VAL_OP, 1, strlen(DEC_VAL_OP), wfp);
+        else if (c == '>') fwrite(INC_PTR_OP, 1, strlen(INC_PTR_OP), wfp);
+        else if (c == '<') fwrite(DEC_PTR_OP, 1, strlen(DEC_PTR_OP), wfp);
+        else if (c == '.') fwrite(OUT_OP, 1, strlen(OUT_OP), wfp);
+        else if (c == ',') fwrite(IN_OP, 1, strlen(IN_OP), wfp);
+        else if (c == '[') fwrite(OPEN_OP, 1, strlen(OPEN_OP), wfp);
+        else if (c == ']') fwrite(CLOSE_OP, 1, strlen(CLOSE_OP), wfp);
     }
+
+    fwrite(END_FILE, 1, strlen(END_FILE), wfp);
+
+    fclose(rfp);
+    fclose(wfp);
 }
 
-
-char* read_file(char* name) {
-    FILE *fp = fopen(name, "r");
-    if (fp == NULL) {
-        printf("%s could not be opened or otherwise failed to open.\n", name);
-        exit(EXIT_FAILURE);
-    }
-    fseek(fp, 0, SEEK_END);
-    long len = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-    char* src = malloc(len + 1);
-    int bracket_counter = 0;
-    for (int i = 0; i < len; i++) {
-        char c = (char) fgetc(fp);
-        if (c == '[') bracket_counter++;
-        if (c == ']') bracket_counter--;
-        src[i] =  c;
-    }
-    src[len] = '\0';
-    fclose(fp);
-    if (bracket_counter > 0) {
-        printf("Unmatched '[': program is invalid\n");
-        exit(EXIT_FAILURE);
-    }
-    if (bracket_counter < 0) {
-        printf("Unmatched ']': program is invalid\n");
-        exit(EXIT_FAILURE);
-    }
-    return src;
+void run() {
+    system("gcc ./bin/generated.c -O3 -o ./bin/generated");
+    system("./bin/generated");
 }
-
 
 int main(int argc, char **argv) {
     if (argc != 2) {
@@ -86,13 +66,10 @@ int main(int argc, char **argv) {
 
     clock_t start = clock();
 
-    char* src = read_file(argv[1]);
-    interpret(src);
-    free(src);
+    transpile(argv[1]);
+    run();
 
-    clock_t end = clock();
-    double cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    printf("Execution time: %f seconds\n", cpu_time_used);
+    printf("\n\nExecution time: %f seconds\n", ((double) (clock() - start)) / CLOCKS_PER_SEC);
 
     exit(EXIT_SUCCESS);
 }
