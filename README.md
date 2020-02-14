@@ -4,7 +4,7 @@
 
 # Sorbet
 
-Sorbet is an interpreter for the esoteric programming language Brainfuck. The interpreter is by no means extremely fast, special or desirable to use, just as the language. The development of this project is purely for academic purposes and practise.
+Sorbet is a compiler or more accurately a transpiler for the esoteric programming language Brainf\*ck. The interpreter is by no means extremely fast, special or desirable to use, just as the language Brainf\*ck itself. The development of this project is purely for academic purposes and practise.
 
 ## Getting Started
 
@@ -25,13 +25,13 @@ $ make
 
 ## Deployment
 
-To interpret a Brainfuck source file (.bf) only a single command is needed. Run the following command in the root of the project:
+To interpret a Brainf\*ck source file (.bf) only a single command is needed. Run the following command in the root of the project:
 
 ```
 $ ./sorbet SOURCE_FILE
 ```
 
-Where `SOURCE_FILE` is the file name of the source file to be interpreted.
+Where `SOURCE_FILE` is the file name of the source file to be interpreted. The `examples` directory contains some non-trivial Brainf\*ck source files.
 
 ## Authors
 
