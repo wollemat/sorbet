@@ -36,6 +36,11 @@ void transpile(char* src) {
     char buffer[1024] = {0};
     char c;
     while ((c = (char) fgetc(rfp)) != EOF) {
+
+        /**
+         * Optimize the Brainf*ck sequence "[-]" from a loop that runs
+         * in the worst case 255 time to a constant time operation.
+         */
         if (c == '[') {
             char c2 = (char) fgetc(rfp);
             char c3 = (char) fgetc(rfp);
@@ -48,6 +53,9 @@ void transpile(char* src) {
             }
         }
 
+        /**
+         * Contract the operations. For example "++++" evaluates to "*ptr += 4".
+         */
         if (c == '+') {
             int acc = 1;
             while (fgetc(rfp) == '+') acc++;
@@ -77,6 +85,9 @@ void transpile(char* src) {
             fwrite(buffer, 1, strlen(buffer), wfp);
         }
 
+        /**
+         * Arbitrarily implement the other 4 Brainf*ck operations.
+         */
         else if (c == '.') fwrite(OUT_OP, 1, strlen(OUT_OP), wfp);
         else if (c == ',') fwrite(IN_OP, 1, strlen(IN_OP), wfp);
         else if (c == '[') fwrite(OPEN_OP, 1, strlen(OPEN_OP), wfp);
