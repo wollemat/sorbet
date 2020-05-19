@@ -2,31 +2,29 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <time.h>
 
-const char* START_FILE =
+const char *START_FILE =
         "#include <stdlib.h>\n"
         "#include <stdio.h>\n"
-        "#include <time.h>\n"
         "\n"
         "char tape[30000] = {0};\n"
         "char* ptr = tape;\n"
         "\n"
         "int main() {\n"
-        "clock_t start = clock();\n"
         "\n";
 
-const char* END_FILE =
+const char *END_FILE =
         "\n"
-        "printf(\"\\n\\nExecution time: %f seconds\\n\", ((double) (clock() - start)) / CLOCKS_PER_SEC);\n"
         "exit(EXIT_SUCCESS);\n"
         "}\n";
 
-const char* OUT_OP = "putchar(*ptr);\n";
-const char* IN_OP = "*ptr = getchar();\n";
-const char* OPEN_OP = "while (*ptr) {\n";
-const char* CLOSE_OP = "}\n";
+const char *OUT_OP = "putchar(*ptr);\n";
+const char *IN_OP = "*ptr = getchar();\n";
+const char *OPEN_OP = "while (*ptr) {\n";
+const char *CLOSE_OP = "}\n";
 
-void transpile(char* src) {
+void transpile(char *src) {
     mkdir("./bin", S_IRWXU);
     FILE *rfp = fopen(src, "r");
     FILE *wfp = fopen("./bin/generated.c", "w");
@@ -62,22 +60,19 @@ void transpile(char* src) {
             fseek(rfp, -1, SEEK_CUR);
             sprintf(buffer, "*ptr += %d;\n", acc);
             fwrite(buffer, 1, strlen(buffer), wfp);
-        }
-        else if (c == '-') {
+        } else if (c == '-') {
             int acc = 1;
             while (fgetc(rfp) == '-') acc++;
             fseek(rfp, -1, SEEK_CUR);
             sprintf(buffer, "*ptr -= %d;\n", acc);
             fwrite(buffer, 1, strlen(buffer), wfp);
-        }
-        else if (c == '>') {
+        } else if (c == '>') {
             int acc = 1;
             while (fgetc(rfp) == '>') acc++;
             fseek(rfp, -1, SEEK_CUR);
             sprintf(buffer, "ptr += %d;\n", acc);
             fwrite(buffer, 1, strlen(buffer), wfp);
-        }
-        else if (c == '<') {
+        } else if (c == '<') {
             int acc = 1;
             while (fgetc(rfp) == '<') acc++;
             fseek(rfp, -1, SEEK_CUR);
@@ -85,9 +80,9 @@ void transpile(char* src) {
             fwrite(buffer, 1, strlen(buffer), wfp);
         }
 
-        /**
-         * Arbitrarily implement the other 4 Brainf*ck operations.
-         */
+            /**
+             * Arbitrarily implement the other 4 Brainf*ck operations.
+             */
         else if (c == '.') fwrite(OUT_OP, 1, strlen(OUT_OP), wfp);
         else if (c == ',') fwrite(IN_OP, 1, strlen(IN_OP), wfp);
         else if (c == '[') fwrite(OPEN_OP, 1, strlen(OPEN_OP), wfp);
@@ -100,19 +95,41 @@ void transpile(char* src) {
     fclose(wfp);
 }
 
+void compile(char *arg) {
+    char command[80];
+    strcpy(command, "gcc ./bin/generated.c ");
+    if (strcmp(arg, "--optimized") == 0) { strcat(command, "-O3 "); }
+    strcat(command, "-o ./bin/generated");
+
+    system(command);
+}
+
 void run() {
-    system("gcc ./bin/generated.c -O3 -o ./bin/generated");
     system("./bin/generated");
+    system("clear");
+    printf("\n");
 }
 
 int main(int argc, char **argv) {
-    if (argc != 2) {
-        printf("Invalid arguments. Usage: sorbet file.\n");
+    if (argc < 3) {
+        printf("Invalid arguments. Usage: sorbet file [--optimized | --default].\n");
         exit(EXIT_FAILURE);
     }
 
+    clock_t start = clock();
     transpile(argv[1]);
+
+    clock_t  check_1 = clock();
+    compile(argv[2]);
+
+    clock_t check_2 = clock();
     run();
+
+    clock_t end = clock();
+    printf("Transpilation time: %f seconds\n", ((double) (check_1 - start)) / CLOCKS_PER_SEC);
+    printf("Compilation time: %f seconds\n", ((double) (check_2 - check_1)) / CLOCKS_PER_SEC);
+    printf("Execution time: %f seconds\n", ((double) (end - check_2)) / CLOCKS_PER_SEC);
+    printf("Total time: %f seconds\n", ((double) (end - start)) / CLOCKS_PER_SEC);
 
     exit(EXIT_SUCCESS);
 }
