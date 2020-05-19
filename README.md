@@ -40,3 +40,7 @@ Where `FILE` is the file name or path of the source file to be run. The `example
 * **Frederik Christian Slothouber** - *Initial work* - [wollemat](https://github.com/wollemat)
 * **Fabian Mastenbroek** - *Inspiration* - [fabianishere](https://github.com/fabianishere)
 * Icon made by [freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com)
+
+## License
+
+This project and its code is released under the [MIT license](LICENSE.txt).
