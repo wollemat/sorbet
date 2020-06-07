@@ -98,7 +98,7 @@ void transpile(char *src) {
 void compile(char *arg) {
     char command[80];
     strcpy(command, "gcc ./bin/generated.c ");
-    if (strcmp(arg, "--optimized") == 0) {
+    if (strcmp(arg, "--optimised") == 0) {
         strcat(command, "-O3 ");
     } else {
         strcat(command, "-O0 ");
@@ -117,14 +117,14 @@ void run() {
 
 int main(int argc, char **argv) {
     if (argc > 1 && strcmp(argv[1], "--help") == 0) {
-        printf("Usage: sorbet file [--optimized|--default].\n\n");
-        printf("--optimized: \tWhen compiling the generated C code the optimization flag -O3 is used.\n");
+        printf("Usage: sorbet file [--optimised|--default].\n\n");
+        printf("--optimised: \tWhen compiling the generated C code the optimization flag -O3 is used.\n");
         printf("--default: \tWhen compiling the generated C code the optimization flag -O0 is used.\n");
         exit(EXIT_FAILURE);
     }
 
     if (argc < 3) {
-        printf("Invalid arguments. Usage: sorbet file [--optimized|--default].\n");
+        printf("Invalid arguments. Usage: sorbet file [--optimised|--default].\n");
         exit(EXIT_FAILURE);
     }
 
