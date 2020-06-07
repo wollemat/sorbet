@@ -1,46 +1,200 @@
 
-<p align="center"> <img src="./icon.png" alt="icon" width="100" height="100" /> </p>
+<p  align="center"> <img src="doc/icon.png" alt="Icon" width="100" height="100" /> </p>
+<h1 align="center">Sorbet</h1>
+<h4 align="center">"The Lightweight Brainf*ck Transpiler"</h4>
 
-# Sorbet
+<p align="center">
+    <a href="https://travis-ci.com/github/wollemat/sorbet/builds">
+    <img src="https://travis-ci.com/wollemat/sorbet.svg?branch=master" alt="Build Status">
+    <a href="LICENSE.md">
+    <img src="https://img.shields.io/badge/license-MIT-yellow" alt="License">
+    <a href="https://paypal.me/wollemat">
+    <img src="https://img.shields.io/badge/donate-PayPal-orange" alt="Donate">
+</p>
+      
+<p align="center">
+  <a href="#about">About</a> •
+  <a href="#building">Building</a> •
+  <a href="#deployment">Deployment</a> •
+  <a href="#examples">Examples</a> •
+  <a href="#contributing">Contributing</a> •
+  <a href="#contributors">Contributors</a> •
+  <a href="#donate">Donate</a> •
+  <a href="#license">License</a>
+</p>
 
-Sorbet is a compiler or more accurately a transpiler for the esoteric programming language Brainf\*ck. The interpreter is by no means fast or elegant, just as the language Brainf\*ck itself. The development of this project is purely for academic purposes and practise.
+## About
 
-## Getting Started
+**Sorbet** is a compiler or more accurately a transpiler for the esoteric programming language [Brainf\*ck](https://en.wikipedia.org/wiki/Brainfuck). 
+The interpreter is by no means fast or elegant, just as the language [Brainf\*ck](https://en.wikipedia.org/wiki/Brainfuck) itself. 
+The development of this project is purely for academic purposes and practise.
 
-To get a build of Sorbet up and running on your local machine the following tools are required:
+## Building
+
+Before building Sorbet please make sure that the following tools are up and running on your machine:
 
 * A working installment of GCC
 * A working installment of CMake
 * A working installment of Make
 
-## Building
-
-Building is as simple as running the following command in the root of the project:
+Download the source code by running the following code in your command prompt:
 
 ```
-$ cmake . && make
+$ git clone https://github.com/wollemat/sorbet.git
 ```
+
+Or simply grab a copy of the source code as a Zip file [here](https://github.com/wollemat/sorbet/archive/master.zip) for the latest release and [here](https://github.com/wollemat/sorbet/archive/develop.zip) for the *"bleeding edge"* version.
+
+Building is as simple as running the following commands in the root of the project:
+
+```
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make
+```
+
+This will create a `build` directory in which CMake and Make will run.
+If done correctly a directory called `bin` is created in the root of the project. 
+The executable binary `sorbet` is placed inside the this `bin` folder.
 
 ## Deployment
 
-Sorbet supports two types of deployment: default execution and optimized execution. The only difference between the two type is that when gcc is used to compile the generated C code a different optimization flag is used. `--default` uses the default gcc compiler flag `-O0` and `--optimzed` uses the `-O3` optimization flag.
+Running Sorbet is just as easy as building it. 
+You can directly run the executable in the `build` directory or add the binary to your `PATH` and run it like any other program. 
+
+Sorbet supports two types of deployment: default execution and optimized execution. 
+The only difference between the two type is that when gcc is used to compile the generated C code a different optimization flag is used. 
+`--default` uses the default gcc compiler flag `-O0` and `--optimzed` uses the `-O3` optimization flag.
 
 To run a Brainf\*ck source file (.bf) run one of the following commands:
 
 ```
-$ ./sorbet FILE --default
-$ ./sorbet FILE --optimized
-$ ./sorbet --help # Shows the man page
+$ sorbet FILE --optimised
+$ sorbet FILE --default
 ```
 
-Where `FILE` is the file name or path of the source file to be run. The `examples` directory contains some non-trivial Brainf\*ck source files. For instance the generation of the famous [Mandelbrot Set](https://en.wikipedia.org/wiki/Mandelbrot_set) and a solution to the [Towers of Hanoi](https://en.wikipedia.org/wiki/Tower_of_Hanoi) puzzle. Watch out the solution is over in the blink of an eye.
+Where `FILE` is the file name or path of the source file to be run. 
+The `examples` directory contains some non-trivial Brainf\*ck source files. 
+For instance the generation of the famous [Mandelbrot Set](https://en.wikipedia.org/wiki/Mandelbrot_set) and a solution to the [Towers of Hanoi](https://en.wikipedia.org/wiki/Tower_of_Hanoi) puzzle. 
+Watch out the solution is over in the blink of an eye.
+
+## Examples
+
+Some examples for you to get you on your way. 
+
+```
+$ sorbet mandelbrot.bf --optimised
+
+gcc ./bin/generated.c -O3 -o ./bin/generated
+
+AAAAAAAAAAAAAAAABBBBBBBBBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDEGFFEEEEDDDDDDCCCCCCCCCBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+AAAAAAAAAAAAAAABBBBBBBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDEEEFGIIGFFEEEDDDDDDDDCCCCCCCCCBBBBBBBBBBBBBBBBBBBBBBBBBB
+AAAAAAAAAAAAABBBBBBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDDEEEEFFFI KHGGGHGEDDDDDDDDDCCCCCCCCCBBBBBBBBBBBBBBBBBBBBBBB
+AAAAAAAAAAAABBBBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDDDDEEEEEFFGHIMTKLZOGFEEDDDDDDDDDCCCCCCCCCBBBBBBBBBBBBBBBBBBBBB
+AAAAAAAAAAABBBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDDDDEEEEEEFGGHHIKPPKIHGFFEEEDDDDDDDDDCCCCCCCCCCBBBBBBBBBBBBBBBBBB
+AAAAAAAAAABBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDDDDDEEEEEEFFGHIJKS  X KHHGFEEEEEDDDDDDDDDCCCCCCCCCCBBBBBBBBBBBBBBBB
+AAAAAAAAABBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDDDDDEEEEEEFFGQPUVOTY   ZQL[MHFEEEEEEEDDDDDDDCCCCCCCCCCCBBBBBBBBBBBBBB
+AAAAAAAABBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDDDDDEEEEEFFFFFGGHJLZ         UKHGFFEEEEEEEEDDDDDCCCCCCCCCCCCBBBBBBBBBBBB
+AAAAAAABBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDDDDEEEEFFFFFFGGGGHIKP           KHHGGFFFFEEEEEEDDDDDCCCCCCCCCCCBBBBBBBBBBB
+AAAAAAABBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDDEEEEEFGGHIIHHHHHIIIJKMR        VMKJIHHHGFFFFFFGSGEDDDDCCCCCCCCCCCCBBBBBBBBB
+AAAAAABBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDEEEEEEFFGHK   MKJIJO  N R  X      YUSR PLV LHHHGGHIOJGFEDDDCCCCCCCCCCCCBBBBBBBB
+AAAAABBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDEEEEEEEEEFFFFGH O    TN S                       NKJKR LLQMNHEEDDDCCCCCCCCCCCCBBBBBBB
+AAAAABBCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDEEEEEEEEEEEEFFFFFGHHIN                                 Q     UMWGEEEDDDCCCCCCCCCCCCBBBBBB
+AAAABBCCCCCCCCCCCCCCCCCCCCCCCCCDDDDEEEEEEEEEEEEEEEFFFFFFGHIJKLOT                                     [JGFFEEEDDCCCCCCCCCCCCCBBBBB
+AAAABCCCCCCCCCCCCCCCCCCCCCCDDDDEEEEEEEEEEEEEEEEFFFFFFGGHYV RQU                                     QMJHGGFEEEDDDCCCCCCCCCCCCCBBBB
+AAABCCCCCCCCCCCCCCCCCDDDDDDDEEFJIHFFFFFFFFFFFFFFGGGGGGHIJN                                            JHHGFEEDDDDCCCCCCCCCCCCCBBB
+AAABCCCCCCCCCCCDDDDDDDDDDEEEEFFHLKHHGGGGHHMJHGGGGGGHHHIKRR                                           UQ L HFEDDDDCCCCCCCCCCCCCCBB
+AABCCCCCCCCDDDDDDDDDDDEEEEEEFFFHKQMRKNJIJLVS JJKIIIIIIJLR                                               YNHFEDDDDDCCCCCCCCCCCCCBB
+AABCCCCCDDDDDDDDDDDDEEEEEEEFFGGHIJKOU  O O   PR LLJJJKL                                                OIHFFEDDDDDCCCCCCCCCCCCCCB
+AACCCDDDDDDDDDDDDDEEEEEEEEEFGGGHIJMR              RMLMN                                                 NTFEEDDDDDDCCCCCCCCCCCCCB
+AACCDDDDDDDDDDDDEEEEEEEEEFGGGHHKONSZ                QPR                                                NJGFEEDDDDDDCCCCCCCCCCCCCC
+ABCDDDDDDDDDDDEEEEEFFFFFGIPJIIJKMQ                   VX                                                 HFFEEDDDDDDCCCCCCCCCCCCCC
+ACDDDDDDDDDDEFFFFFFFGGGGHIKZOOPPS                                                                      HGFEEEDDDDDDCCCCCCCCCCCCCC
+ADEEEEFFFGHIGGGGGGHHHHIJJLNY                                                                        TJHGFFEEEDDDDDDDCCCCCCCCCCCCC
+A                                                                                                 PLJHGGFFEEEDDDDDDDCCCCCCCCCCCCC
+ADEEEEFFFGHIGGGGGGHHHHIJJLNY                                                                        TJHGFFEEEDDDDDDDCCCCCCCCCCCCC
+ACDDDDDDDDDDEFFFFFFFGGGGHIKZOOPPS                                                                      HGFEEEDDDDDDCCCCCCCCCCCCCC
+ABCDDDDDDDDDDDEEEEEFFFFFGIPJIIJKMQ                   VX                                                 HFFEEDDDDDDCCCCCCCCCCCCCC
+AACCDDDDDDDDDDDDEEEEEEEEEFGGGHHKONSZ                QPR                                                NJGFEEDDDDDDCCCCCCCCCCCCCC
+AACCCDDDDDDDDDDDDDEEEEEEEEEFGGGHIJMR              RMLMN                                                 NTFEEDDDDDDCCCCCCCCCCCCCB
+AABCCCCCDDDDDDDDDDDDEEEEEEEFFGGHIJKOU  O O   PR LLJJJKL                                                OIHFFEDDDDDCCCCCCCCCCCCCCB
+AABCCCCCCCCDDDDDDDDDDDEEEEEEFFFHKQMRKNJIJLVS JJKIIIIIIJLR                                               YNHFEDDDDDCCCCCCCCCCCCCBB
+AAABCCCCCCCCCCCDDDDDDDDDDEEEEFFHLKHHGGGGHHMJHGGGGGGHHHIKRR                                           UQ L HFEDDDDCCCCCCCCCCCCCCBB
+AAABCCCCCCCCCCCCCCCCCDDDDDDDEEFJIHFFFFFFFFFFFFFFGGGGGGHIJN                                            JHHGFEEDDDDCCCCCCCCCCCCCBBB
+AAAABCCCCCCCCCCCCCCCCCCCCCCDDDDEEEEEEEEEEEEEEEEFFFFFFGGHYV RQU                                     QMJHGGFEEEDDDCCCCCCCCCCCCCBBBB
+AAAABBCCCCCCCCCCCCCCCCCCCCCCCCCDDDDEEEEEEEEEEEEEEEFFFFFFGHIJKLOT                                     [JGFFEEEDDCCCCCCCCCCCCCBBBBB
+AAAAABBCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDEEEEEEEEEEEEFFFFFGHHIN                                 Q     UMWGEEEDDDCCCCCCCCCCCCBBBBBB
+AAAAABBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDEEEEEEEEEFFFFGH O    TN S                       NKJKR LLQMNHEEDDDCCCCCCCCCCCCBBBBBBB
+AAAAAABBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDEEEEEEFFGHK   MKJIJO  N R  X      YUSR PLV LHHHGGHIOJGFEDDDCCCCCCCCCCCCBBBBBBBB
+AAAAAAABBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDDEEEEEFGGHIIHHHHHIIIJKMR        VMKJIHHHGFFFFFFGSGEDDDDCCCCCCCCCCCCBBBBBBBBB
+AAAAAAABBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDDDDEEEEFFFFFFGGGGHIKP           KHHGGFFFFEEEEEEDDDDDCCCCCCCCCCCBBBBBBBBBBB
+AAAAAAAABBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDDDDDEEEEEFFFFFGGHJLZ         UKHGFFEEEEEEEEDDDDDCCCCCCCCCCCCBBBBBBBBBBBB
+AAAAAAAAABBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDDDDDEEEEEEFFGQPUVOTY   ZQL[MHFEEEEEEEDDDDDDDCCCCCCCCCCCBBBBBBBBBBBBBB
+AAAAAAAAAABBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDDDDDEEEEEEFFGHIJKS  X KHHGFEEEEEDDDDDDDDDCCCCCCCCCCBBBBBBBBBBBBBBBB
+AAAAAAAAAAABBBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDDDDEEEEEEFGGHHIKPPKIHGFFEEEDDDDDDDDDCCCCCCCCCCBBBBBBBBBBBBBBBBBB
+AAAAAAAAAAAABBBBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDDDDEEEEEFFGHIMTKLZOGFEEDDDDDDDDDCCCCCCCCCBBBBBBBBBBBBBBBBBBBBB
+AAAAAAAAAAAAABBBBBBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDDEEEEFFFI KHGGGHGEDDDDDDDDDCCCCCCCCCBBBBBBBBBBBBBBBBBBBBBBB
+AAAAAAAAAAAAAAABBBBBBBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDEEEFGIIGFFEEEDDDDDDDDCCCCCCCCCBBBBBBBBBBBBBBBBBBBBBBBBBB
+
+Transpilation time: 0.008678 seconds
+Compilation time: 0.000278 seconds
+Execution time: 0.000466 seconds
+Total time: 0.009422 seconds
+```
+
+```
+$ bin/sorbet examples/numwarp.bf --optimised
+
+gcc ./bin/generated.c -O3 -o ./bin/generated
+
+12345678
+              /\
+              \/\
+            /\ \/
+              \
+          /
+          \/\
+        /  \/
+        \/\
+       \  /
+      \/\
+    /\
+     /\
+  /\  /
+   /
+ \ \/
+  \
+
+Transpilation time: 0.001326 seconds
+Compilation time: 0.000235 seconds
+Execution time: 0.000557 seconds
+Total time: 0.002118 seconds
+```
+
+Good Luck & Be Safe!
+
+## Contributing
+
+Feel free to help me out and make your mark on this project. 
+No program is ever perfect and Sorbet can always be improved upon.
+If you feel like a feature is missing or you encounter a bug, please report it by creating an [issue](https://github.com/wollemat/sorbet/issues/new).
+Before doing this please read the [Code of Conduct](CODE_OF_CONDUCT.md) and the [Contributing](CONTRIBUTING.md) guidelines.
+I look forward to working with you.
 
 ## Contributors
 
 * **Frederik Christian Slothouber** - *Initial work* - [wollemat](https://github.com/wollemat)
 * **Fabian Mastenbroek** - *Inspiration* - [fabianishere](https://github.com/fabianishere)
-* Icon made by [freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com)
+
+## Donate
+
+Please consider [donating](https://paypal.me/wollemat) if you found Sorbet helpful in any shape or form. 
+A small contribution comes a long way and is much appreciated.
 
 ## License
 
-This project and its code is released under the [MIT license](LICENSE.txt).
+<p align="center">This project and its code are released under the MIT license. Please have a look at the <a href="LICENSE.md">LICENSE.md</a> for more details.</p>
+<p align="center">Icon made by <a href="https://www.flaticon.com/authors/freepik">Freepik</a> from www.flaticon.com</p>
+<p align="center">copyright © <a href="https://github.com/wollemat">wollemat</a></p>
+
