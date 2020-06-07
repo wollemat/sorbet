@@ -25,9 +25,9 @@ const char *OPEN_OP = "while (*ptr) {\n";
 const char *CLOSE_OP = "}\n";
 
 void transpile(char *src) {
-    mkdir("./bin", S_IRWXU);
+    mkdir("./tmp", S_IRWXU);
     FILE *rfp = fopen(src, "r");
-    FILE *wfp = fopen("./bin/generated.c", "w");
+    FILE *wfp = fopen("./tmp/generated.c", "w");
 
     fwrite(START_FILE, 1, strlen(START_FILE), wfp);
 
@@ -97,20 +97,20 @@ void transpile(char *src) {
 
 void compile(char *arg) {
     char command[80];
-    strcpy(command, "gcc ./bin/generated.c ");
+    strcpy(command, "gcc ./tmp/generated.c ");
     if (strcmp(arg, "--optimised") == 0) {
         strcat(command, "-O3 ");
     } else {
         strcat(command, "-O0 ");
     }
-    strcat(command, "-o ./bin/generated");
+    strcat(command, "-o ./tmp/generated");
 
     printf("%s\n\n", command);
     system(command);
 }
 
 void run() {
-    system("./bin/generated");
+    system("./tmp/generated");
     system("clear");
     printf("\n");
 }
