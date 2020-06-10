@@ -18,4 +18,5 @@ sorbet
 
 # Ignore generated files
 bin/
+tmp/
 
