@@ -43,7 +43,7 @@ Download the source code by running the following code in your command prompt:
 $ git clone https://github.com/wollemat/sorbet.git
 ```
 
-Or simply grab a copy of the source code as a Zip file [here](https://github.com/wollemat/sorbet/archive/master.zip) for the latest release and [here](https://github.com/wollemat/sorbet/archive/develop.zip) for the *"bleeding edge"* version.
+Or simply grab a copy of the source code as a zip file [here](https://github.com/wollemat/sorbet/archive/master.zip) for the latest release and [here](https://github.com/wollemat/sorbet/archive/develop.zip) for the *"bleeding edge"* version.
 
 Building is as simple as running the following commands in the root of the project:
 
@@ -63,18 +63,13 @@ The executable binary `sorbet` is placed inside the this `bin` folder.
 Running Sorbet is just as easy as building it. 
 You can directly run the executable in the `build` directory or add the binary to your `PATH` and run it like any other program. 
 
-Sorbet supports two types of deployment: default execution and optimized execution. 
-The only difference between the two type is that when gcc is used to compile the generated C code a different optimization flag is used. 
-`--default` uses the default gcc compiler flag `-O0` and `--optimzed` uses the `-O3` optimization flag.
-
-To run a Brainf\*ck source file (.bf) run one of the following commands:
+To run a Brainf\*ck source file (.bf) run the following command:
 
 ```
-$ sorbet FILE --optimised
-$ sorbet FILE --default
+$ sorbet FILE
 ```
 
-Where `FILE` is the file name or path of the source file to be run. 
+Where `FILE` is the file name or path of the Brainf*ck source file to be run. 
 The `examples` directory contains some non-trivial Brainf\*ck source files. 
 For instance the generation of the famous [Mandelbrot Set](https://en.wikipedia.org/wiki/Mandelbrot_set) and a solution to the [Towers of Hanoi](https://en.wikipedia.org/wiki/Tower_of_Hanoi) puzzle. 
 Watch out the solution is over in the blink of an eye.
@@ -84,9 +79,7 @@ Watch out the solution is over in the blink of an eye.
 Some examples for you to get you on your way. 
 
 ```
-$ sorbet mandelbrot.bf --optimised
-
-gcc ./bin/generated.c -O3 -o ./bin/generated
+$ sorbet examples/mandelbrot.bf
 
 AAAAAAAAAAAAAAAABBBBBBBBBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDEGFFEEEEDDDDDDCCCCCCCCCBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
 AAAAAAAAAAAAAAABBBBBBBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDEEEFGIIGFFEEEDDDDDDDDCCCCCCCCCBBBBBBBBBBBBBBBBBBBBBBBBBB
@@ -137,16 +130,10 @@ AAAAAAAAAAAABBBBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDDDDEEEEEFFGHI
 AAAAAAAAAAAAABBBBBBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDDEEEEFFFI KHGGGHGEDDDDDDDDDCCCCCCCCCBBBBBBBBBBBBBBBBBBBBBBB
 AAAAAAAAAAAAAAABBBBBBBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDEEEFGIIGFFEEEDDDDDDDDCCCCCCCCCBBBBBBBBBBBBBBBBBBBBBBBBBB
 
-Transpilation time: 0.008678 seconds
-Compilation time: 0.000278 seconds
-Execution time: 0.000466 seconds
-Total time: 0.009422 seconds
 ```
 
 ```
-$ bin/sorbet examples/numwarp.bf --optimised
-
-gcc ./bin/generated.c -O3 -o ./bin/generated
+$ bin/sorbet examples/numwarp.bf
 
 12345678
               /\
@@ -166,10 +153,6 @@ gcc ./bin/generated.c -O3 -o ./bin/generated
  \ \/
   \
 
-Transpilation time: 0.001326 seconds
-Compilation time: 0.000235 seconds
-Execution time: 0.000557 seconds
-Total time: 0.002118 seconds
 ```
 
 Good Luck & Be Safe!
@@ -179,7 +162,7 @@ Good Luck & Be Safe!
 Feel free to help me out and make your mark on this project. 
 No program is ever perfect and Sorbet can always be improved upon.
 If you feel like a feature is missing or you encounter a bug, please report it by creating an [issue](https://github.com/wollemat/sorbet/issues/new).
-Before doing this please read the [Code of Conduct](CODE_OF_CONDUCT.md) and the [Contributing](CONTRIBUTING.md) guidelines.
+Before doing this please read the [Code of Conduct](CODE_OF_CONDUCT.md) and the [Contributing Guidelines](CONTRIBUTING.md).
 I look forward to working with you.
 
 ## Contributors
@@ -197,4 +180,3 @@ A small contribution comes a long way and is much appreciated.
 <p align="center">This project and its code are released under the MIT license. Please have a look at the <a href="LICENSE.md">LICENSE.md</a> for more details.</p>
 <p align="center">Icon made by <a href="https://www.flaticon.com/authors/freepik">Freepik</a> from www.flaticon.com</p>
 <p align="center">copyright © <a href="https://github.com/wollemat">wollemat</a></p>
-
