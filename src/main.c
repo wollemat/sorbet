@@ -2,146 +2,108 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <time.h>
 
-const char *START_FILE =
-        "#include <stdlib.h>\n"
-        "#include <stdio.h>\n"
+const char *file_start = // Boilerplate start of C source.
+        "#include <stdlib.h>\n" // Import C standard library.
+        "#include <stdio.h>\n" // Import C input output library.
         "\n"
-        "char tape[30000] = {0};\n"
-        "char* ptr = tape;\n"
+        "char tape[30000] = {0};\n" // Initialise character tape.
+        "char* ptr = tape;\n" // Initialise pointer.
         "\n"
-        "int main() {\n"
+        "int main() {\n" // Declare main function.
         "\n";
 
-const char *END_FILE =
+const char *file_end = // Boilerplate end of C source.
         "\n"
-        "exit(EXIT_SUCCESS);\n"
+        "exit(EXIT_SUCCESS);\n" // Exit the program successfully.
         "}\n";
 
-const char *OUT_OP = "putchar(*ptr);\n";
-const char *IN_OP = "*ptr = getchar();\n";
-const char *OPEN_OP = "while (*ptr) {\n";
-const char *CLOSE_OP = "}\n";
+const char *op_output = "putchar(*ptr);\n";
+const char *op_input = "*ptr = getchar();\n";
+const char *op_loop_start = "while (*ptr) {\n";
+const char *op_loop_end = "}\n";
 
+/**
+ * Write the contracted and optimised version of repeated Brainf*ck operations.
+ *
+ * @param src_file File pointer to Brainf*ck source.
+ * @param gen_file File pointer to generated C source
+ * @param bf_op The Brainf*ck operation to be contracted.
+ * @param c_op The C operation to transpile to.
+ * @param buffer The character buffer to write the optimised operation to.
+ */
+void contract(FILE *src_file, FILE *gen_file, const char bf_op, const char *c_op, char *buffer) {
+    int acc = 1;
+    while (fgetc(src_file) == bf_op) acc++;
+    fseek(src_file, -1, SEEK_CUR);
+    sprintf(buffer, "%s %d;\n", c_op, acc);
+    fwrite(buffer, 1, strlen(buffer), gen_file);
+}
+
+/**
+ * Transpile Brainf*ck source code to C source code.
+ * The transpiled code is written to './tmp/generated.c'
+ *
+ * @param src The character string representing the Brainf*ck source.
+ */
 void transpile(char *src) {
-    mkdir("./tmp", S_IRWXU);
-    FILE *rfp = fopen(src, "r");
-    FILE *wfp = fopen("./tmp/generated.c", "w");
+    mkdir("./tmp", S_IRWXU); // Create directory used for generated source
+    FILE *src_file = fopen(src, "r"); // Open Brainf*ck source file.
+    FILE *gen_file = fopen("./tmp/generated.c", "w"); // Open C source file.
 
-    fwrite(START_FILE, 1, strlen(START_FILE), wfp);
+    fwrite(file_start, 1, strlen(file_start), gen_file); // Write required start boilerplate to file.
 
-    char buffer[1024] = {0};
-    char c;
-    while ((c = (char) fgetc(rfp)) != EOF) {
+    char buffer[1024] = {0}; // Character buffer used for writing to generated file.
+    char c; // Current Brainf*ck operation.
+
+    while ((c = (char) fgetc(src_file)) != EOF) { // Loop source until the 'EOF' character is reached.
 
         /**
          * Optimize the Brainf*ck sequence "[-]" from a loop that runs
          * in the worst case 255 time to a constant time operation.
          */
         if (c == '[') {
-            char c2 = (char) fgetc(rfp);
-            char c3 = (char) fgetc(rfp);
-            if (c2 == '-' && c3 == ']') {
-                sprintf(buffer, "*ptr = 0;\n");
-                fwrite(buffer, 1, strlen(buffer), wfp);
-                continue;
-            } else {
-                fseek(rfp, -2, SEEK_CUR);
+            char c2 = (char) fgetc(src_file); // Check for '-' operation.
+            char c3 = (char) fgetc(src_file); // Check for ']' operation.
+            if (c2 == '-' && c3 == ']') { // If operations match then:
+                sprintf(buffer, "*ptr = 0;\n"); // Buffer optimised C code.
+                fwrite(buffer, 1, strlen(buffer), gen_file); // Write buffer to generated file.
+                continue; // Transpile to next Brainf*ck operation.
+            } else { // If operations do not match then:
+                fseek(src_file, -2, SEEK_CUR); // Reset consumed operations.
             }
         }
 
         /**
-         * Contract the operations. For example "++++" evaluates to "*ptr += 4".
+         * Contract the '+', '-', '<' and '>' operations.
+         * For example "++++" evaluates to "*ptr += 4".
          */
-        if (c == '+') {
-            int acc = 1;
-            while (fgetc(rfp) == '+') acc++;
-            fseek(rfp, -1, SEEK_CUR);
-            sprintf(buffer, "*ptr += %d;\n", acc);
-            fwrite(buffer, 1, strlen(buffer), wfp);
-        } else if (c == '-') {
-            int acc = 1;
-            while (fgetc(rfp) == '-') acc++;
-            fseek(rfp, -1, SEEK_CUR);
-            sprintf(buffer, "*ptr -= %d;\n", acc);
-            fwrite(buffer, 1, strlen(buffer), wfp);
-        } else if (c == '>') {
-            int acc = 1;
-            while (fgetc(rfp) == '>') acc++;
-            fseek(rfp, -1, SEEK_CUR);
-            sprintf(buffer, "ptr += %d;\n", acc);
-            fwrite(buffer, 1, strlen(buffer), wfp);
-        } else if (c == '<') {
-            int acc = 1;
-            while (fgetc(rfp) == '<') acc++;
-            fseek(rfp, -1, SEEK_CUR);
-            sprintf(buffer, "ptr -= %d;\n", acc);
-            fwrite(buffer, 1, strlen(buffer), wfp);
-        }
+        if (c == '+') contract(src_file, gen_file, '+', "*ptr +=", buffer); // Contract '+' operation.
+        else if (c == '-') contract(src_file, gen_file, '-', "*ptr -=", buffer); // Contract '-' operation.
+        else if (c == '>') contract(src_file, gen_file, '>', "ptr +=", buffer); // Contract '>' operation.
+        else if (c == '<') contract(src_file, gen_file, '<', "ptr -=", buffer); // Contract '<' operation.
 
-            /**
-             * Arbitrarily implement the other 4 Brainf*ck operations.
-             */
-        else if (c == '.') fwrite(OUT_OP, 1, strlen(OUT_OP), wfp);
-        else if (c == ',') fwrite(IN_OP, 1, strlen(IN_OP), wfp);
-        else if (c == '[') fwrite(OPEN_OP, 1, strlen(OPEN_OP), wfp);
-        else if (c == ']') fwrite(CLOSE_OP, 1, strlen(CLOSE_OP), wfp);
+        else if (c == '.') fwrite(op_output, 1, strlen(op_output), gen_file); // Transpile '.' operation.
+        else if (c == ',') fwrite(op_input, 1, strlen(op_input), gen_file); // Transpile ',' operation.
+        else if (c == '[') fwrite(op_loop_start, 1, strlen(op_loop_start), gen_file); // Transpile '[' operation.
+        else if (c == ']') fwrite(op_loop_end, 1, strlen(op_loop_end), gen_file); // Transpile ']' operation.
     }
 
-    fwrite(END_FILE, 1, strlen(END_FILE), wfp);
+    fwrite(file_end, 1, strlen(file_end), gen_file); // Write required end boilerplate to file.
 
-    fclose(rfp);
-    fclose(wfp);
-}
-
-void compile(char *arg) {
-    char command[80];
-    strcpy(command, "gcc ./tmp/generated.c ");
-    if (strcmp(arg, "--optimised") == 0) {
-        strcat(command, "-O3 ");
-    } else {
-        strcat(command, "-O0 ");
-    }
-    strcat(command, "-o ./tmp/generated");
-
-    printf("%s\n\n", command);
-    system(command);
-}
-
-void run() {
-    system("./tmp/generated");
-    system("clear");
-    printf("\n");
+    fclose(src_file); // Close Brainf*ck source file.
+    fclose(gen_file); // Close C source file.
 }
 
 int main(int argc, char **argv) {
-    if (argc > 1 && strcmp(argv[1], "--help") == 0) {
-        printf("Usage: sorbet file [--optimised|--default].\n\n");
-        printf("--optimised: \tWhen compiling the generated C code the optimization flag -O3 is used.\n");
-        printf("--default: \tWhen compiling the generated C code the optimization flag -O0 is used.\n");
-        exit(EXIT_FAILURE);
+    if (argc < 2) { // Check if enough arguments are used when Sorbet is called.
+        printf("Invalid arguments. Usage: sorbet file.\n"); // Print usage message.
+        exit(EXIT_FAILURE); // Exit program unsuccessfully.
     }
 
-    if (argc < 3) {
-        printf("Invalid arguments. Usage: sorbet file [--optimised|--default].\n");
-        exit(EXIT_FAILURE);
-    }
+    transpile(argv[1]); // Transpile Brainf*ck source code to C source code.
+    system("gcc ./tmp/generated.c -O3 -o ./tmp/generated"); // Compile generated C source code.
+    system("./tmp/generated"); // Execute compiled program.
 
-    clock_t start = clock();
-    transpile(argv[1]);
-
-    clock_t  check_1 = clock();
-    compile(argv[2]);
-
-    clock_t check_2 = clock();
-    run();
-
-    clock_t end = clock();
-    printf("Transpilation time: %f seconds\n", ((double) (check_1 - start)) / CLOCKS_PER_SEC);
-    printf("Compilation time: %f seconds\n", ((double) (check_2 - check_1)) / CLOCKS_PER_SEC);
-    printf("Execution time: %f seconds\n", ((double) (end - check_2)) / CLOCKS_PER_SEC);
-    printf("Total time: %f seconds\n", ((double) (end - start)) / CLOCKS_PER_SEC);
-
-    exit(EXIT_SUCCESS);
+    exit(EXIT_SUCCESS); // Exit program successfully.
 }
