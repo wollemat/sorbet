@@ -133,7 +133,7 @@ AAAAAAAAAAAAAAABBBBBBBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDEEEFGII
 ```
 
 ```
-$ bin/sorbet examples/numwarp.bf
+$ sorbet examples/numwarp.bf
 
 12345678
               /\
