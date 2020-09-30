@@ -1,5 +1,5 @@
 
-<p  align="center"> <img src="doc/icon.png" alt="Icon" width="100" height="100" /> </p>
+<p  align="center"> <img src="icon.png" alt="Icon" width="100" height="100" /> </p>
 <h1 align="center">Sorbet</h1>
 <h4 align="center">"The Lightweight Brainf*ck Transpiler"</h4>
 
