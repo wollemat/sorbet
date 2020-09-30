@@ -95,6 +95,11 @@ void transpile(char *src) {
     fclose(gen_file); // Close C source file.
 }
 
+/**
+ * The main function. This is where the program starts.
+ *
+ * @return Returns EXIT_SUCCESS when the program succeeds else returns EXIT_FAILURE.
+ */
 int main(int argc, char **argv) {
     if (argc < 2) { // Check if enough arguments are used when Sorbet is called.
         printf("Invalid arguments. Usage: sorbet file.\n"); // Print usage message.
